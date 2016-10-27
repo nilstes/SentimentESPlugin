@@ -1,60 +1,44 @@
 package analysis;
 
-/*import edu.stanford.nlp.ling.CoreAnnotations;
-import edu.stanford.nlp.neural.rnn.RNNCoreAnnotations;
-import edu.stanford.nlp.pipeline.Annotation;
-import edu.stanford.nlp.pipeline.StanfordCoreNLP;
-import edu.stanford.nlp.sentiment.SentimentCoreAnnotations;
-import edu.stanford.nlp.trees.Tree;
-import edu.stanford.nlp.util.CoreMap;
-import edu.stanford.nlp.util.PropertiesUtils;
-import edu.stanford.nlp.util.logging.Redwood;
-import edu.stanford.nlp.util.logging.RedwoodConfiguration;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PrintStream;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
-import java.util.List;
-import java.util.Properties;
-*/
+import org.apache.http.Header;
+import org.apache.http.HttpEntity;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 
 /**
  * @author nilstes
  */
 public class SentimentAnalyser {
     
-/*    private StanfordCoreNLP pipeline;
-
     public SentimentAnalyser() {
-        Properties props = PropertiesUtils.asProperties(
-            "annotators", "tokenize, ssplit, parse, sentiment");
-        pipeline = new StanfordCoreNLP(props);
     }
     
     public int findSentiment(String text) {
-        int mainSentiment = 0;
-        if (text != null && text.length() > 0) {
-            int longest = 0;
-            Annotation annotation = pipeline.process(text);
-            List<CoreMap> maps = annotation.get(CoreAnnotations.SentencesAnnotation.class);
-            for (CoreMap sentence : maps) {
-                Tree tree = sentence.get(SentimentCoreAnnotations.SentimentAnnotatedTree.class);
-                int sentiment = RNNCoreAnnotations.getPredictedClass(tree);
-                String partText = sentence.toString();
-                
-                if (partText.length() > longest) {
-                    mainSentiment = sentiment;
-                    longest = partText.length();
+        try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
+            HttpPost httppost = new HttpPost("http://localhost:8080/sentiment/webresources/sentiment");
+            httppost.setEntity(new StringEntity(text, ContentType.create("text/plain", "UTF-8")));
+            try (CloseableHttpResponse response = httpclient.execute(httppost)) {
+                if(response.getStatusLine().getStatusCode() == 200) {
+                    return Integer.parseInt(EntityUtils.toString(response.getEntity()));
+                } else {
+                    return -1;
                 }
             }
+        } catch(Exception e) {
+            return -1;
         }
-        return mainSentiment;
-    }
-*/
-    public SentimentAnalyser() {
-    }
-    
-    public int findSentiment(String text) {
-        return 2;
     }    
+    
+    public static void main(String[] args) throws Exception {
+        System.out.println(new SentimentAnalyser().findSentiment("happy"));
+    }
 }
