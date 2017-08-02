@@ -11,7 +11,7 @@
     <description>Sentiment plugin for elasticsearch</description>
 
     <properties>
-        <elasticsearch.version>5.1.2</elasticsearch.version>
+        <elasticsearch.version>5.5.1</elasticsearch.version>
     </properties>
 
     <dependencies>
